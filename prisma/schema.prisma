@@ -143,6 +143,13 @@ model JobPosting {
   department    Department? @relation(fields: [department_id], references: [department_id])
 }
 
+model User {
+  id Int @id @default(autoincrement())
+  email   String
+  password String
+  fullName String
+}
+
 enum Status {
   Applied
   Interviewed
