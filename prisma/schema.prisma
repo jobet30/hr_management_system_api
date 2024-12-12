@@ -1,0 +1,160 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model Attendance {
+  attendance_id Int      @id @default(autoincrement())
+  employee_id   Int
+  date          DateTime
+  status        String
+  employee      Employee @relation(fields: [employee_id], references: [employee_id])
+}
+
+model Payroll {
+  payroll_id  Int      @id @default(autoincrement())
+  employee_id Int
+  salary      Decimal
+  date        DateTime
+  employee    Employee @relation(fields: [employee_id], references: [employee_id])
+}
+
+model EmployeeBenefit {
+  benefit_id   Int      @id @default(autoincrement())
+  employee_id  Int
+  benefit_type String
+  value        Decimal
+  employee     Employee @relation(fields: [employee_id], references: [employee_id])
+}
+
+model EmployeeTraining {
+  training_id    Int      @id @default(autoincrement())
+  employee_id    Int
+  training_name  String
+  date_completed DateTime
+  employee       Employee @relation(fields: [employee_id], references: [employee_id])
+}
+
+model Goal {
+  goal_id     Int      @id @default(autoincrement())
+  employee_id Int
+  description String
+  target_date DateTime
+  employee    Employee @relation(fields: [employee_id], references: [employee_id])
+}
+
+model Application {
+  application_id   Int         @id @default(autoincrement())
+  job_id           Int?
+  applicant_id     Int?
+  status           Status      @default(Applied)
+  application_date DateTime
+  job              Job?        @relation("JobApplications", fields: [job_id], references: [job_id])
+  applicant        Employee?   @relation(fields: [applicant_id], references: [employee_id])
+  interviews       Interview[]
+}
+
+model Job {
+  job_id       Int           @id @default(autoincrement())
+  title        String
+  description  String
+  location     String?
+  posted_date  DateTime
+  closing_date DateTime?
+  applications Application[] @relation("JobApplications")
+}
+
+model Employee {
+  employee_id   Int                @id @default(autoincrement())
+  first_name    String
+  last_name     String
+  email         String             @unique
+  phone_number  String?
+  date_of_birth DateTime?
+  hire_date     DateTime
+  job_title     String?
+  department_id Int?
+  manager_id    Int?
+  salary        Decimal?
+  status        EmployeeStatus     @default(Active)
+  created_at    DateTime           @default(now())
+  updated_at    DateTime           @updatedAt
+  department    Department?        @relation(fields: [department_id], references: [department_id])
+  manager       Employee?          @relation("Manager", fields: [manager_id], references: [employee_id])
+  subordinates  Employee[]         @relation("Manager")
+  applications  Application[]
+  attendances   Attendance[]
+  payrolls      Payroll[]
+  benefits      EmployeeBenefit[]
+  trainings     EmployeeTraining[]
+  goals         Goal[]
+  expenses      Expense[]
+}
+
+model Expense {
+  expense_id   Int       @id @default(autoincrement())
+  employee_id  Int?
+  expense_type String?
+  amount       Decimal
+  date         DateTime
+  description  String?
+  employee     Employee? @relation(fields: [employee_id], references: [employee_id])
+}
+
+model Interview {
+  interview_id     Int              @id @default(autoincrement())
+  application_id   Int?
+  interview_date   DateTime
+  interview_type   InterviewType
+  interview_result InterviewResult?
+  application      Application?     @relation(fields: [application_id], references: [application_id])
+}
+
+model Department {
+  department_id   Int          @id @default(autoincrement())
+  department_name String
+  location        String?
+  employees       Employee[]
+  job_postings    JobPosting[]
+}
+
+model JobPosting {
+  job_id        Int         @id @default(autoincrement())
+  title         String
+  description   String
+  location      String?
+  department_id Int?
+  posted_date   DateTime
+  closing_date  DateTime?
+  department    Department? @relation(fields: [department_id], references: [department_id])
+}
+
+enum Status {
+  Applied
+  Interviewed
+  Hired
+  Rejected
+}
+
+enum InterviewType {
+  Phone
+  InPerson
+  Video
+}
+
+enum InterviewResult {
+  Pending
+  Passed
+  Failed
+}
+
+enum EmployeeStatus {
+  Active
+  Inactive
+  Terminated
+}
