@@ -1,4 +1,4 @@
-version: '3.8'
+version: "3.8"
 
 services:
   api:
@@ -8,7 +8,7 @@ services:
       target: production
     container_name: hr-management-api
     ports:
-      - '8080:8080'
+      - "8080:8080"
     environment:
       NODE_ENV: production
       PORT: 8080
@@ -38,7 +38,7 @@ services:
       MYSQL_PASSWORD:
       MYSQL_DATABASE: hr_management_system
     ports:
-      - '3306:3306'
+      - "3306:3306"
     volumes:
       - db-data:/var/lib/mysql
       - ./sql:/docker-entrypoint-initdb.d:ro
