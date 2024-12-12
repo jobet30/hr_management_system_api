@@ -1,3 +1,11 @@
+/* eslint-disable prettier/prettier */
+/**
+ * Author: Jobet Casquejo
+ * Description: This file contains the configuration for the MySQL database connection.
+ * @module database
+ * Date: 2024-12-12
+ * Version: 1.0.0
+ */
 import { registerAs } from "@nestjs/config";
 
 /**
